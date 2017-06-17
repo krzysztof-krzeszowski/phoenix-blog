@@ -6,7 +6,10 @@ defmodule Pxblog.Post do
     field :body, :string
 
     timestamps()
+
+    belongs_to :user, Pxblog.User
   end
+
 
   @doc """
   Builds a changeset based on the `struct` and `params`.
