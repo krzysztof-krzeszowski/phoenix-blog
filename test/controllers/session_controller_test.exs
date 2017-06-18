@@ -1,11 +1,12 @@
 defmodule Pxblog.SessionControllerTest do
   use Pxblog.ConnCase
+
   alias Pxblog.User
+  alias Pxblog.TestHelper
 
   setup do
-    User.changeset(%User{}, %{username: "test", password: "test",
-                              password_confirmation: "test", email: "test@test.com"})
-    |> Repo.insert
+    {:ok, role} = TestHelper.create_role(%{name: "user", admin: false})
+    {:ok, _user} = TestHelper.create_user(role, %{email: "a@a.pl", username: "test", password: "test", password_confirmation: "test"})
     {:ok, conn: build_conn()}
   end
 
