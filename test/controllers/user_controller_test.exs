@@ -5,18 +5,24 @@ defmodule Pxblog.UserControllerTest do
   #alias Pxblog.Role
   alias Pxblog.TestHelper
 
-  @valid_create_attrs %{email: "asd@qwe.pl", password: "asdqwe123", password_confirmation: "asdqwe123", username: "asdqwe"}
-  @valid_attrs %{email: "asd@qwe.pl", username: "asdqwe"}
+  @valid_create_attrs %{email: "asd@a.pl", password: "asd", password_confirmation: "asd", username: "asd"}
+  @valid_attrs %{email: "asd@a.pl", username: "asd"}
   @invalid_attrs %{}
 
   setup do
     {:ok, user_role} = TestHelper.create_role(%{name: "user", admin: false})
     {:ok, admin_role} = TestHelper.create_role(%{name: "admin", admin: true})
-    {:ok, conn: build_conn(), user_role: user_role, admin_role: admin_role}
+    {:ok, user} = TestHelper.create_user(user_role, %{username: "a", email: "a@a.pl", password: "a", password_confirmation: "a"})
+    {:ok, admin_user} = TestHelper.create_user(admin_role, %{username: "ad", email: "ad@a.pl", password: "a", password_confirmation: "a"})
+    {:ok, conn: build_conn(), user: user, admin_user: admin_user, user_role: user_role, admin_role: admin_role}
   end
 
   defp valid_create_attrs(role) do
     Map.put(@valid_create_attrs, :role_id, role.id)
+  end
+
+  defp login_user(conn, user) do
+    post conn, session_path(conn, :create), user: %{username: user.username, password: user.password}
   end
 
   test "lists all entries on index", %{conn: conn} do
@@ -24,18 +30,42 @@ defmodule Pxblog.UserControllerTest do
     assert html_response(conn, 200) =~ "Listing users"
   end
 
-  test "renders form for new resources", %{conn: conn} do
-    conn = get conn, user_path(conn, :new)
+  @tag admin: true
+  test "renders form for new resources", %{conn: conn, admin_user: admin_user} do
+    conn = login_user(conn, admin_user)
+    conn = get(conn, user_path(conn, :new))
     assert html_response(conn, 200) =~ "New user"
   end
 
-  test "creates resource and redirects when data is valid", %{conn: conn, user_role: user_role} do
+  @tag admin: true
+  test "redirects from new form when not admin", %{conn: conn, user: user} do
+    conn = login_user(conn, user)
+    conn = get conn, user_path(conn, :new)
+    assert get_flash(conn, :error) == "You are not authorized to create new users!"
+    assert redirected_to(conn) == page_path(conn, :index)
+    assert conn.halted
+  end
+
+  @tag admin: true
+  test "creates resource and redirects when data is valid", %{conn: conn, user_role: user_role, admin_user: admin_user} do
+    conn = login_user(conn, admin_user)
     conn = post conn, user_path(conn, :create), user: valid_create_attrs(user_role)
     assert redirected_to(conn) == user_path(conn, :index)
     assert Repo.get_by(User, @valid_attrs)
   end
 
-  test "does not create resource and renders errors when data is invalid", %{conn: conn} do
+  @tag admin: true
+  test "redirects from creating user when not admin", %{conn: conn, user_role: user_role, user: user} do
+    conn = login_user(conn, user)
+    conn = post conn, user_path(conn, :create), user: valid_create_attrs(user_role)
+    assert get_flash(conn, :error) == "You are not authorized to create new users!"
+    assert redirected_to(conn) == page_path(conn, :index)
+    assert conn.halted
+  end
+
+  @tag admin: true
+  test "does not create resource and renders errors when data is invalid", %{conn: conn, admin_user: admin_user} do
+    conn = login_user(conn, admin_user)
     conn = post conn, user_path(conn, :create), user: @invalid_attrs
     assert html_response(conn, 200) =~ "New user"
   end
@@ -52,27 +82,35 @@ defmodule Pxblog.UserControllerTest do
     end
   end
 
-  test "renders form for editing chosen resource", %{conn: conn} do
-    user = Repo.insert! %User{}
+  @tag admin: true
+  test "renders form for editing chosen resource when logged in as that user", %{conn: conn, user: user} do
+    conn = login_user(conn, user)
     conn = get conn, user_path(conn, :edit, user)
     assert html_response(conn, 200) =~ "Edit user"
   end
 
-  test "updates chosen resource and redirects when data is valid", %{conn: conn, user_role: user_role} do
-    user = Repo.insert! %User{}
+  @tag admin: true
+  test "renders form for editing chosen resource when logged in as admin", %{conn: conn, user: user, admin_user: admin_user} do
+    conn = login_user(conn, admin_user)
+    conn = get conn, user_path(conn, :edit, user)
+    assert html_response(conn, 200) =~ "Edit user"
+  end
+
+  test "updates chosen resource and redirects when data is valid when logged in as that user", %{conn: conn, user_role: user_role, user: user} do
+    conn = login_user(conn, user)
     conn = put conn, user_path(conn, :update, user), user: valid_create_attrs(user_role)
     assert redirected_to(conn) == user_path(conn, :show, user)
     assert Repo.get_by(User, @valid_attrs)
   end
 
-  test "does not update chosen resource and renders errors when data is invalid", %{conn: conn} do
-    user = Repo.insert! %User{}
+  test "does not update chosen resource and renders errors when data is invalid", %{conn: conn, user: user} do
+    conn = login_user(conn, user)
     conn = put conn, user_path(conn, :update, user), user: @invalid_attrs
     assert html_response(conn, 200) =~ "Edit user"
   end
 
-  test "deletes chosen resource", %{conn: conn} do
-    user = Repo.insert! %User{}
+  test "deletes chosen resource when logged in as that user", %{conn: conn, user: user} do
+    conn = login_user(conn, user)
     conn = delete conn, user_path(conn, :delete, user)
     assert redirected_to(conn) == user_path(conn, :index)
     refute Repo.get(User, user.id)

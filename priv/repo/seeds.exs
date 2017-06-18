@@ -13,11 +13,30 @@
 alias Pxblog.Repo
 alias Pxblog.Role
 alias Pxblog.User
+import Ecto.Query, only: [from: 2]
 
-role = %Role{}
-  |> Role.changeset(%{name: "Admin", admin: true})
-  |> Repo.insert!
+find_or_create_role = fn role_name, admin ->
+  case Repo.all(from r in Role, where: r.name == ^role_name and r.admin == ^admin) do
+    [] ->
+      %Role{}
+      |> Role.changeset(%{name: role_name, admin: admin})
+      |> Repo.insert!
+    _ ->
+      IO.puts "Role: #{role_name} already exists, skipping"
+  end
+end
 
-admin = %User{}
-  |> User.changeset(%{username: "admin", email: "asd@qwe.pl", password: "asdqwe123", password_confirmation: "asdqwe123", role_id: role.id})
-  |> Repo.insert!
+find_or_create_user = fn username, email, password, password_confirmation, role ->
+  case Repo.all(from u in User, where: u.username == ^username) do
+    [] ->
+      %User{}
+      |> User.changeset(%{username: username, email: email, password: password, password_confirmation: password_confirmation, role_id: role.id})
+      |> Repo.insert!
+    _ ->
+      IO.puts "User #{username} already exists, skipping"
+  end
+end
+
+_user_role = find_or_create_role.("User role", false)
+admin_role = find_or_create_role.("Admin role", true)
+_admin_user = find_or_create_user.("admin", "a@a.pl", "asdqwe123", "asdqwe123", admin_role)
