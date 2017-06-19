@@ -26,6 +26,7 @@ defmodule Pxblog.ConnCase do
       import Ecto.Query
 
       import Pxblog.Router.Helpers
+      import Pxblog.Factory
 
       # The default endpoint for testing
       @endpoint Pxblog.Endpoint

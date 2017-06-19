@@ -2,18 +2,18 @@ defmodule Pxblog.UserControllerTest do
   use Pxblog.ConnCase
 
   alias Pxblog.User
-  #alias Pxblog.Role
-  alias Pxblog.TestHelper
 
   @valid_create_attrs %{email: "asd@a.pl", password: "asd", password_confirmation: "asd", username: "asd"}
   @valid_attrs %{email: "asd@a.pl", username: "asd"}
   @invalid_attrs %{}
 
   setup do
-    {:ok, user_role} = TestHelper.create_role(%{name: "user", admin: false})
-    {:ok, admin_role} = TestHelper.create_role(%{name: "admin", admin: true})
-    {:ok, user} = TestHelper.create_user(user_role, %{username: "a", email: "a@a.pl", password: "a", password_confirmation: "a"})
-    {:ok, admin_user} = TestHelper.create_user(admin_role, %{username: "ad", email: "ad@a.pl", password: "a", password_confirmation: "a"})
+    user_role = insert(:role)
+    user = insert(:user, role: user_role)
+
+    admin_role = insert(:role, admin: true)
+    admin_user = insert(:user, role: admin_role)
+
     {:ok, conn: build_conn(), user: user, admin_user: admin_user, user_role: user_role, admin_role: admin_role}
   end
 

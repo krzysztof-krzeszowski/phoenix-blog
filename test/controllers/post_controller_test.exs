@@ -3,14 +3,14 @@ defmodule Pxblog.PostControllerTest do
 
   alias Pxblog.Post
   alias Pxblog.TestHelper
-
+  
   @valid_attrs %{body: "some content", title: "some content"}
   @invalid_attrs %{"body" => nil}
 
   setup do
-    {:ok, role} = TestHelper.create_role(%{name: "User", admin: false})
-    {:ok, user} = TestHelper.create_user(role, %{email: "a@a.pl", username: "a", password: "a", password_confirmation: "a"})
-    {:ok, post} = TestHelper.create_post(user, %{title: "a", body: "a"})
+    role = insert(:role)
+    user = insert(:user, role: role)
+    post = insert(:post, user: user)
     conn = build_conn()
     |> login_user(user)
     {:ok, conn: conn, user: user, role: role, post: post}
