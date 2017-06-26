@@ -1,18 +1,26 @@
 <h2>Show post</h2>
 
 <ul>
-
   <li>
     <strong>Title:</strong>
     <%= @post.title %>
   </li>
-
   <li>
     <strong>Body:</strong>
     <%= markdown(@post.body) %>
   </li>
-
 </ul>
+
+<%= render Pxblog.CommentView, "form.html", changeset:
+  @comment_changeset, action: post_comment_path(@conn, :create, @post)
+%>
+
+<div class="comments">
+  <h2>Comments</h2>
+  <%= for comment <- @post.comments do %>
+    <%= render Pxblog.CommentView, "comment.html", comment: comment %>
+  <% end %>
+</div>
 
 <%= link "Edit", to: user_post_path(@conn, :edit, @user, @post) %>
 <%= link "Back", to: user_post_path(@conn, :index, @user) %>

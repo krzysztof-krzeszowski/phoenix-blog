@@ -4,6 +4,16 @@ defmodule Pxblog.Factory do
   alias Pxblog.Role
   alias Pxblog.User
   alias Pxblog.Post
+  alias Pxblog.Comment
+
+  def comment_factory do
+    %Comment{
+      author: "user",
+      body: "some body",
+      approved: false,
+      post: build(:post)
+    }
+  end
 
   def post_factory do
     %Post{

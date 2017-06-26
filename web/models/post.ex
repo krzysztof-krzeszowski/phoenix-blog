@@ -8,6 +8,7 @@ defmodule Pxblog.Post do
     timestamps()
 
     belongs_to :user, Pxblog.User
+    has_many :comments, Pxblog.Comment
   end
 
 
