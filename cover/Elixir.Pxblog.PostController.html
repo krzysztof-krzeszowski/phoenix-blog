@@ -1,0 +1,134 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<title>cover/Elixir.Pxblog.PostController.html</title>
+</head><body style='background-color: white; color: black'>
+<pre>
+File generated from /home/chriss/github/elixir/phoenix-blog/web/controllers/post_controller.ex by COVER 2017-06-29 at 13:58:22
+
+****************************************************************************
+
+    10..|  defmodule Pxblog.PostController do
+        |    use Pxblog.Web, :controller
+        |  
+        |    alias Pxblog.Post
+        |    alias Pxblog.RoleChecker
+        |  
+        |    plug :assign_user
+        |    plug :authorize_user when action in [:new, :create, :update, :edit, :delete]
+        |    plug :set_authorization_flag
+        |  
+        |    def index(conn, _params) do
+        |      posts = Repo.all(assoc(conn.assigns[:user], :posts))
+        |      render(conn, "index.html", posts: posts)
+        |    end
+        |  
+        |    def new(conn, _params) do
+        |      changeset = 
+        |        conn.assigns[:user]
+        |        |&gt; build_assoc(:posts)
+        |        |&gt; Post.changeset()
+        |      render(conn, "new.html", changeset: changeset)
+        |    end
+        |  
+        |    def create(conn, %{"post" =&gt; post_params}) do
+        |      changeset = 
+        |        conn.assigns[:user]
+        |        |&gt; build_assoc(:posts)
+        |        |&gt; Post.changeset(post_params)
+        |  
+        |      case Repo.insert(changeset) do
+        |        {:ok, _post} -&gt;
+        |          conn
+        |          |&gt; put_flash(:info, "Post created successfully.")
+        |          |&gt; redirect(to: user_post_path(conn, :index, conn.assigns[:user]))
+        |        {:error, changeset} -&gt;
+        |          render(conn, "new.html", changeset: changeset)
+        |      end
+        |    end
+        |  
+        |    def show(conn, %{"id" =&gt; id}) do
+        |      post = Repo.get!(assoc(conn.assigns[:user], :posts), id)
+        |      |&gt; Repo.preload(:comments)
+        |      comment_changeset = post
+        |        |&gt; build_assoc(:comments)
+        |        |&gt; Pxblog.Comment.changeset()
+        |      render(conn, "show.html", post: post, comment_changeset: comment_changeset)
+        |    end
+        |  
+        |    def edit(conn, %{"id" =&gt; id}) do
+        |      post = Repo.get!(assoc(conn.assigns[:user], :posts), id)
+        |      changeset = Post.changeset(post)
+        |      render(conn, "edit.html", post: post, changeset: changeset)
+        |    end
+        |  
+        |    def update(conn, %{"id" =&gt; id, "post" =&gt; post_params}) do
+        |      post = Repo.get!(assoc(conn.assigns[:user], :posts), id)
+        |      changeset = Post.changeset(post, post_params)
+        |  
+        |      case Repo.update(changeset) do
+        |        {:ok, post} -&gt;
+        |          conn
+        |          |&gt; put_flash(:info, "Post updated successfully.")
+        |          |&gt; redirect(to: user_post_path(conn, :show, conn.assigns[:user], post))
+        |        {:error, changeset} -&gt;
+        |          render(conn, "edit.html", post: post, changeset: changeset)
+        |      end
+        |    end
+        |  
+        |    def delete(conn, %{"id" =&gt; id}) do
+        |      post = Repo.get!(assoc(conn.assigns[:user], :posts), id)
+        |  
+        |      # Here we use delete! (with a bang) because we expect
+        |      # it to always work (and if it does not, it will raise).
+        |      Repo.delete!(post)
+        |  
+        |      conn
+        |      |&gt; put_flash(:info, "Post deleted successfully.")
+        |      |&gt; redirect(to: user_post_path(conn, :index, conn.assigns[:user]))
+        |    end
+        |  
+        |    defp assign_user(conn, _opts) do
+        |      case conn.params do
+        |        %{"user_id" =&gt; user_id} -&gt;
+        |          case Repo.get(Pxblog.User, user_id) do
+        |            nil -&gt; invalid_user(conn)
+        |            user -&gt; assign(conn, :user, user)
+        |          end
+        |        _ -&gt;
+        |          invalid_user(conn)
+        |      end
+        |    end
+        |  
+        |    defp invalid_user(conn) do
+        |      conn
+        |      |&gt; put_flash(:error, "Invalid user!")
+        |      |&gt; redirect(to: page_path(conn, :index))
+        |      |&gt; halt
+        |    end
+        |  
+        |    defp authorize_user(conn, _opts) do
+        |      if is_authorized_user?(conn) do
+        |        conn
+        |      else
+        |        conn
+        |        |&gt; put_flash(:error, "You are not authorized to modify that post!")
+        |        |&gt; redirect(to: page_path(conn, :index))
+        |        |&gt; halt()
+        |      end
+        |    end
+        |  
+        |    defp is_authorized_user?(conn) do
+        |      user = get_session(conn, :current_user)
+        |      (user &amp;&amp; (Integer.to_string(user.id) == conn.params["user_id"] || RoleChecker.is_admin?(user)))
+        |    end
+        |  
+        |    def set_authorization_flag(conn, _opts) do
+        |      assign(conn, :author_or_admin, is_authorized_user?(conn))
+        |    end
+        |    
+        |  end
+</pre>
+</body>
+</html>

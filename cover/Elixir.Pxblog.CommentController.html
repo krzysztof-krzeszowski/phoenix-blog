@@ -1,0 +1,98 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<title>cover/Elixir.Pxblog.CommentController.html</title>
+</head><body style='background-color: white; color: black'>
+<pre>
+File generated from /home/chriss/github/elixir/phoenix-blog/web/controllers/comment_controller.ex by COVER 2017-06-29 at 13:58:22
+
+****************************************************************************
+
+<font color=red>     0..|  defmodule Pxblog.CommentController do</font>
+        |    use Pxblog.Web, :controller
+        |  
+        |    alias Pxblog.Comment
+        |    alias Pxblog.Post
+        |    alias Pxblog.RoleChecker
+        |  
+        |    plug :scrub_params, "comment" when action in [:create, :update]
+        |    plug :set_post_and_authorize_user when action in [:update, :delete]
+        |  
+        |    def create(conn, %{"comment" =&gt; comment_params, "post_id" =&gt; post_id}) do
+        |      post = Repo.get!(Post, post_id) |&gt; Repo.preload([:user, :comments])
+        |      changeset = post
+        |        |&gt; build_assoc(:comments)
+        |        |&gt; Comment.changeset(comment_params)
+        |  
+        |      case Repo.insert(changeset) do
+        |        {:ok, _comment} -&gt;
+        |          conn
+        |          |&gt; put_flash(:info, "Comment created successfully!")
+        |          |&gt; redirect(to: user_post_path(conn, :show, post.user, post))
+        |        {:error, changeset} -&gt;
+        |          render(conn, Pxblog.PostView, "show.html", post: post, user: post.user, comment_changeset: changeset)
+        |      end
+        |    end
+        |  
+        |    def delete(conn, %{"id" =&gt; id, "post_id" =&gt; post_id}) do
+        |      post = Repo.get!(Post, post_id) |&gt; Repo.preload(:user)
+        |      Repo.get!(Comment, id) |&gt; Repo.delete!()
+        |      conn
+        |      |&gt; put_flash(:info, "Deleted comment!")
+        |      |&gt; redirect(to: user_post_path(conn, :show, post.user, post))
+        |    end
+        |  
+        |    def update(conn, %{"id" =&gt; id, "post_id" =&gt; post_id, "comment" =&gt; comment_params}) do
+        |      post = Repo.get!(Post, post_id) |&gt; Repo.preload(:user)
+        |      comment = Repo.get!(Comment, id)
+        |      changeset = Comment.changeset(comment, comment_params)
+        |  
+        |      case Repo.update(changeset) do
+        |        {:ok, _} -&gt;
+        |          conn
+        |          |&gt; put_flash(:info, "Comment updated successfully!")
+        |          |&gt; redirect(to: user_post_path(conn, :show, post.user, post))
+        |        {:error, _} -&gt;
+        |          conn
+        |          |&gt; put_flash(:info, "Failed to update comment!")
+        |          |&gt; redirect(to: user_post_path(conn, :show, post.user, post))
+        |      end
+        |    end
+        |  
+        |    defp set_post(conn) do
+        |      post = Repo.get!(Post, conn.params["post_id"]) |&gt; Repo.preload(:user)
+        |      assign(conn, :post, post)
+        |    end
+        |  
+        |    defp set_post_and_authorize_user(conn, _opts) do
+        |      conn = set_post(conn)
+        |      if is_authorized_user?(conn) do
+        |        conn
+        |      else
+        |        conn
+        |        |&gt; put_flash(:error, "You are not authorized to modify that comment!")
+        |        |&gt; redirect(to: page_path(conn, :index))
+        |        |&gt; halt()
+        |      end
+        |    end
+        |  
+        |    defp is_authorized_user?(conn) do
+        |      user = get_session(conn, :current_user)
+        |      post = conn.assigns[:post]
+        |      user &amp;&amp; (user.id == post.user_id || RoleChecker.is_admin?(user))
+        |    end
+        |  end
+        |  
+        |  
+        |  
+        |  
+        |  
+        |  
+        |  
+        |  
+        |  
+        |  
+</pre>
+</body>
+</html>

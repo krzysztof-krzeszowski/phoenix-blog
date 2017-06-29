@@ -1,0 +1,34 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<title>cover/Elixir.Pxblog.Role.html</title>
+</head><body style='background-color: white; color: black'>
+<pre>
+File generated from /home/chriss/github/elixir/phoenix-blog/web/models/role.ex by COVER 2017-06-29 at 13:58:22
+
+****************************************************************************
+
+        |  defmodule Pxblog.Role do
+        |    use Pxblog.Web, :model
+        |  
+    16..|    schema "roles" do
+        |      field :name, :string
+        |      field :admin, :boolean, default: false
+        |  
+        |      timestamps()
+        |      has_many :users, Pxblog.User
+        |    end
+        |  
+        |    @doc """
+        |    Builds a changeset based on the `struct` and `params`.
+        |    """
+        |    def changeset(struct, params \\ %{}) do
+        |      struct
+        |      |&gt; cast(params, [:name, :admin])
+        |      |&gt; validate_required([:name, :admin])
+        |    end
+        |  end
+</pre>
+</body>
+</html>

@@ -5,11 +5,10 @@ defmodule Pxblog.CommentHelper do
 
   def create(%{"postId" => post_id, "body" => body, "author" => author}, _socket) do
     post = get_post(post_id)
-    changeset = post
       |> build_assoc(:comments)
       |> Comment.changeset(%{body: body, author: author})
+      |> Repo.insert
     
-    Repo.insert(changeset)
   end
 
   def approve(%{"postId" => post_id, "commentId" => comment_id}, %{assigns: %{user: user_id}}) do
@@ -19,6 +18,8 @@ defmodule Pxblog.CommentHelper do
       Repo.update(changeset)
     end)
   end
+  def approve(_, %{}), do: {:error, "User is not authorized"}
+  def approve(_, nil), do: {:error, "User is not authorized"}
 
   def delete(%{"postId" => post_id, "commentId" => comment_id}, %{assigns: %{user: user_id}}) do
     authorize_and_perform(post_id, user_id, fn ->
@@ -26,6 +27,8 @@ defmodule Pxblog.CommentHelper do
       Repo.delete(comment)
     end)
   end
+  def delete(_, %{}), do: {:error, "User is not authorized"}
+  def delete(_, nil), do: {:error, "User is not authorized"}
 
   defp authorize_and_perform(post_id, user_id, action) do
     post = get_post(post_id)

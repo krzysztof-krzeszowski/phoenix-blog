@@ -1,0 +1,60 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<title>cover/Elixir.Pxblog.SessionController.html</title>
+</head><body style='background-color: white; color: black'>
+<pre>
+File generated from /home/chriss/github/elixir/phoenix-blog/web/controllers/session_controller.ex by COVER 2017-06-29 at 13:58:22
+
+****************************************************************************
+
+    28..|  defmodule Pxblog.SessionController do
+        |    use Pxblog.Web, :controller
+        |    alias Pxblog.User
+        |    import Comeonin.Bcrypt, only: [checkpw: 2, dummy_checkpw: 0]
+        |  
+        |    plug :scrub_params, "user" when action in [:create]
+        |  
+        |    def new(conn, _params) do
+        |      render conn, "new.html", changeset: User.changeset(%User{})
+        |    end
+        |  
+        |    def create(conn, %{"user" =&gt; %{"username" =&gt; username, "password" =&gt; password}})
+        |    when not is_nil(username) and not is_nil(password) do
+        |      Repo.get_by(User, username: username)
+        |      |&gt; sign_in(password, conn)
+        |    end
+        |    def create(conn, _), do: failed_login(conn)
+        |  
+        |    def delete(conn, _params) do
+        |      conn
+        |      |&gt; delete_session(:current_user)
+        |      |&gt; put_flash(:info, "Signed out successfully!")
+        |      |&gt; redirect(to: page_path(conn, :index))
+        |    end
+        |  
+        |    defp failed_login(conn) do
+        |      dummy_checkpw()
+        |      conn
+        |      |&gt; put_session(:current_user, nil)
+        |      |&gt; put_flash(:error, "Invalid username/password combination!")
+        |      |&gt; redirect(to: page_path(conn, :index))
+        |      |&gt; halt()
+        |    end
+        |  
+        |    defp sign_in(user, _password, conn) when is_nil(user), do: failed_login(conn)
+        |    defp sign_in(user, password, conn) do
+        |      if checkpw(password, user.password_digest) do
+        |        conn
+        |        |&gt; put_session(:current_user, %{id: user.id, username: user.username, role_id: user.role_id})
+        |        |&gt; put_flash(:info, "Sign in successful!")
+        |        |&gt; redirect(to: page_path(conn, :index))
+        |      else
+        |        failed_login(conn)
+        |      end
+        |    end
+        |  end
+</pre>
+</body>
+</html>

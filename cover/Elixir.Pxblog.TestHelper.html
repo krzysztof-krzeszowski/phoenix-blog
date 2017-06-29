@@ -1,0 +1,41 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<title>cover/Elixir.Pxblog.TestHelper.html</title>
+</head><body style='background-color: white; color: black'>
+<pre>
+File generated from /home/chriss/github/elixir/phoenix-blog/test/support/test_helper.ex by COVER 2017-06-29 at 13:58:22
+
+****************************************************************************
+
+        |  defmodule Pxblog.TestHelper do
+        |    alias Pxblog.Repo
+        |    alias Pxblog.User
+        |    alias Pxblog.Role
+        |    alias Pxblog.Post
+        |  
+        |    import Ecto, only: [build_assoc: 2]
+        |  
+        |    def create_role(%{name: name, admin: admin}) do
+        |      Role.changeset(%Role{}, %{name: name, admin: admin})
+    12..|      |&gt; Repo.insert
+        |    end
+        |  
+        |    def create_user(role, %{email: email, username: username, password: password, password_confirmation: password_confirmation}) do
+        |      role
+        |      |&gt; build_assoc(:users)
+        |      |&gt; User.changeset(%{email: email, username: username, password: password, password_confirmation: password_confirmation})
+     9..|      |&gt; Repo.insert
+        |    end
+        |  
+        |    def create_post(user, %{title: title, body: body}) do
+        |      user
+        |      |&gt; build_assoc(:posts)
+        |      |&gt; Post.changeset(%{title: title, body: body})
+<font color=red>     0..|      |&gt; Repo.insert</font>
+        |    end
+        |  end
+</pre>
+</body>
+</html>

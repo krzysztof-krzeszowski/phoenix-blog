@@ -1,0 +1,51 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<title>cover/Elixir.Pxblog.User.html</title>
+</head><body style='background-color: white; color: black'>
+<pre>
+File generated from /home/chriss/github/elixir/phoenix-blog/web/models/user.ex by COVER 2017-06-29 at 13:58:22
+
+****************************************************************************
+
+        |  defmodule Pxblog.User do
+        |    use Pxblog.Web, :model
+        |    import Comeonin.Bcrypt, only: [hashpwsalt: 1]
+        |  
+    47..|    schema "users" do
+        |      field :username, :string
+        |      field :email, :string
+        |      field :password_digest, :string
+        |  
+        |      timestamps()
+        |  
+        |      # virtual fields
+        |      field :password, :string, virtual: true
+        |      field :password_confirmation, :string, virtual: true
+        |      has_many :posts, Pxblog.Post
+        |      belongs_to :role, Pxblog.Role
+        |    end
+        |  
+        |    @doc """
+        |    Builds a changeset based on the `struct` and `params`.
+        |    """
+        |    def changeset(struct, params \\ %{}) do
+        |      struct
+        |      |&gt; cast(params, [:username, :email, :password, :password_confirmation, :role_id])
+        |      |&gt; validate_required([:username, :email, :password, :password_confirmation, :role_id])
+        |      |&gt; hash_password
+        |    end
+        |  
+        |    defp hash_password changeset do
+        |      if password = get_change(changeset, :password) do
+        |        changeset
+        |        |&gt; put_change(:password_digest, hashpwsalt(password))
+        |      else
+        |        changeset
+        |      end
+        |    end
+        |  end
+</pre>
+</body>
+</html>

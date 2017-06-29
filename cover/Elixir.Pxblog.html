@@ -1,0 +1,45 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<title>cover/Elixir.Pxblog.html</title>
+</head><body style='background-color: white; color: black'>
+<pre>
+File generated from /home/chriss/github/elixir/phoenix-blog/lib/pxblog.ex by COVER 2017-06-29 at 13:58:22
+
+****************************************************************************
+
+        |  defmodule Pxblog do
+        |    use Application
+        |  
+        |    # See http://elixir-lang.org/docs/stable/elixir/Application.html
+        |    # for more information on OTP Applications
+        |    def start(_type, _args) do
+        |      import Supervisor.Spec
+        |  
+        |      # Define workers and child supervisors to be supervised
+     1..|      children = [
+        |        # Start the Ecto repository
+        |        supervisor(Pxblog.Repo, []),
+        |        # Start the endpoint when the application starts
+        |        supervisor(Pxblog.Endpoint, []),
+        |        # Start your own worker by calling: Pxblog.Worker.start_link(arg1, arg2, arg3)
+        |        # worker(Pxblog.Worker, [arg1, arg2, arg3]),
+        |      ]
+        |  
+        |      # See http://elixir-lang.org/docs/stable/elixir/Supervisor.html
+        |      # for other strategies and supported options
+     1..|      opts = [strategy: :one_for_one, name: Pxblog.Supervisor]
+     1..|      Supervisor.start_link(children, opts)
+        |    end
+        |  
+        |    # Tell Phoenix to update the endpoint configuration
+        |    # whenever the application is updated.
+        |    def config_change(changed, _new, removed) do
+<font color=red>     0..|      Pxblog.Endpoint.config_change(changed, removed)</font>
+        |      :ok
+        |    end
+        |  end
+</pre>
+</body>
+</html>

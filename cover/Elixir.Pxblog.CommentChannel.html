@@ -1,0 +1,77 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<title>cover/Elixir.Pxblog.CommentChannel.html</title>
+</head><body style='background-color: white; color: black'>
+<pre>
+File generated from /home/chriss/github/elixir/phoenix-blog/web/channels/comment_channel.ex by COVER 2017-06-29 at 13:58:22
+
+****************************************************************************
+
+        |  defmodule Pxblog.CommentChannel do
+        |    use Pxblog.Web, :channel
+        |  
+        |    alias Pxblog.CommentHelper
+        |  
+        |    def join("comments:" &lt;&gt; _comment_id, payload, socket) do
+<font color=red>     0..|      if authorized?(payload) do</font>
+        |        {:ok, socket}
+        |      else
+        |        {:error, %{reason: "unauthorized"}}
+        |      end
+        |    end
+        |  
+        |    # Channels can be used in a request/response fashion
+        |    # by sending replies to requests from the client
+        |    def handle_in("CREATED_COMMENT", payload, socket) do
+<font color=red>     0..|      case CommentHelper.create(payload, socket) do</font>
+        |        {:ok, comment} -&gt;
+<font color=red>     0..|          broadcast socket, "CREATED_COMMENT", Map.merge(payload, %{insertedAt: comment.inserted_at, commentId: comment.id, approved: comment.approved})</font>
+        |          {:noreply, socket}
+        |        {:error, _} -&gt;
+        |          {:noreply, socket}
+        |      end
+        |    end
+        |  
+        |    def handle_in("APPROVED_COMMENT", payload, socket) do
+<font color=red>     0..|      case CommentHelper.approve(payload, socket) do</font>
+        |        {:ok, comment} -&gt;
+<font color=red>     0..|          new_payload = payload</font>
+        |            |&gt; Map.merge(%{
+<font color=red>     0..|              insertedAt: comment.inserted_at,</font>
+<font color=red>     0..|              commentId: comment.id,</font>
+<font color=red>     0..|              approved: comment.approved</font>
+        |            })
+<font color=red>     0..|          broadcast socket, "APPROVED_COMMENT", new_payload</font>
+        |          {:noreply, socket}
+        |        {:error, _} -&gt;
+        |          {:noreply, socket}
+        |      end
+        |    end
+        |  
+        |    def handle_in("DELETED_COMMENT", payload, socket) do
+<font color=red>     0..|      case CommentHelper.delete(payload, socket) do</font>
+        |        {:ok, _} -&gt;
+<font color=red>     0..|          broadcast socket, "DELETED_COMMENT", payload</font>
+        |          {:noreply, socket}
+        |        {:error, _} -&gt;
+        |          {:noreply, socket}
+        |      end
+        |    end
+        |  
+        |    # It is also common to receive messages from the client and
+        |    # broadcast to everyone in the current topic (comment:lobby).
+        |    def handle_in("shout", payload, socket) do
+<font color=red>     0..|      broadcast socket, "shout", payload</font>
+        |      {:noreply, socket}
+        |    end
+        |  
+        |    # Add authorization logic here as required.
+        |    defp authorized?(_payload) do
+        |      true
+        |    end
+        |  end
+</pre>
+</body>
+</html>

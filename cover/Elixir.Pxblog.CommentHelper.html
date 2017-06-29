@@ -1,0 +1,62 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<title>cover/Elixir.Pxblog.CommentHelper.html</title>
+</head><body style='background-color: white; color: black'>
+<pre>
+File generated from /home/chriss/github/elixir/phoenix-blog/web/channels/comment_helper.ex by COVER 2017-06-29 at 13:58:22
+
+****************************************************************************
+
+        |  defmodule Pxblog.CommentHelper do
+        |    alias Pxblog.{Comment, Post, Repo, RoleChecker, User}
+        |  
+        |    import Ecto, only: [build_assoc: 2]
+        |  
+        |    def create(%{"postId" =&gt; post_id, "body" =&gt; body, "author" =&gt; author}, _socket) do
+     1..|      post = get_post(post_id)
+        |        |&gt; build_assoc(:comments)
+        |        |&gt; Comment.changeset(%{body: body, author: author})
+        |        |&gt; Repo.insert
+        |      
+        |    end
+        |  
+        |    def approve(%{"postId" =&gt; post_id, "commentId" =&gt; comment_id}, %{assigns: %{user: user_id}}) do
+<font color=red>     0..|      authorize_and_perform(post_id, user_id, fn -&gt; </font>
+<font color=red>     0..|        comment = Repo.get!(Comment, comment_id)</font>
+<font color=red>     0..|        changeset = Comment.changeset(comment, %{approved: true})</font>
+<font color=red>     0..|        Repo.update(changeset)</font>
+        |      end)
+        |    end
+        |    def approve(_, %{}), do: {:error, "User is not authorized"}
+        |    def approve(_, nil), do: {:error, "User is not authorized"}
+        |  
+        |    def delete(%{"postId" =&gt; post_id, "commentId" =&gt; comment_id}, %{assigns: %{user: user_id}}) do
+<font color=red>     0..|      authorize_and_perform(post_id, user_id, fn -&gt;</font>
+<font color=red>     0..|        comment = Repo.get!(Comment, comment_id)</font>
+<font color=red>     0..|        Repo.delete(comment)</font>
+        |      end)
+        |    end
+        |    def delete(_, %{}), do: {:error, "User is not authorized"}
+        |    def delete(_, nil), do: {:error, "User is not authorized"}
+        |  
+        |    defp authorize_and_perform(post_id, user_id, action) do
+<font color=red>     0..|      post = get_post(post_id)</font>
+<font color=red>     0..|      user = get_user(user_id)</font>
+<font color=red>     0..|      if is_authorized_user?(user, post) do</font>
+<font color=red>     0..|        action.()</font>
+        |      else
+        |        {:error, "User is not authorized"}
+        |      end
+        |    end
+        |  
+<font color=red>     0..|    defp get_user(user_id), do: Repo.get!(User, user_id)</font>
+        |  
+     1..|    defp get_post(post_id), do: Repo.get!(Post, post_id) |&gt; Repo.preload([:user, :comments])
+        |  
+<font color=red>     0..|    defp is_authorized_user?(user, post), do: (user &amp;&amp; (user.id == post.user_id  || RoleChecker.is_admin?(user)))</font>
+        |  end
+</pre>
+</body>
+</html>

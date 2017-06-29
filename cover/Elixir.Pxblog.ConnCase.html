@@ -1,0 +1,59 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<title>cover/Elixir.Pxblog.ConnCase.html</title>
+</head><body style='background-color: white; color: black'>
+<pre>
+File generated from /home/chriss/github/elixir/phoenix-blog/test/support/conn_case.ex by COVER 2017-06-29 at 13:58:22
+
+****************************************************************************
+
+    37..|  defmodule Pxblog.ConnCase do
+        |    @moduledoc """
+        |    This module defines the test case to be used by
+        |    tests that require setting up a connection.
+        |  
+        |    Such tests rely on `Phoenix.ConnTest` and also
+        |    import other functionality to make it easier
+        |    to build and query models.
+        |  
+        |    Finally, if the test case interacts with the database,
+        |    it cannot be async. For this reason, every test runs
+        |    inside a transaction which is reset at the beginning
+        |    of the test unless the test case is marked as async.
+        |    """
+        |  
+        |    use ExUnit.CaseTemplate
+        |  
+        |    using do
+        |      quote do
+        |        # Import conveniences for testing with connections
+        |        use Phoenix.ConnTest
+        |  
+        |        alias Pxblog.Repo
+        |        import Ecto
+        |        import Ecto.Changeset
+        |        import Ecto.Query
+        |  
+        |        import Pxblog.Router.Helpers
+        |        import Pxblog.Factory
+        |  
+        |        # The default endpoint for testing
+        |        @endpoint Pxblog.Endpoint
+        |      end
+        |    end
+        |  
+        |    setup tags do
+        |      :ok = Ecto.Adapters.SQL.Sandbox.checkout(Pxblog.Repo)
+        |  
+        |      unless tags[:async] do
+        |        Ecto.Adapters.SQL.Sandbox.mode(Pxblog.Repo, {:shared, self()})
+        |      end
+        |  
+        |      {:ok, conn: Phoenix.ConnTest.build_conn()}
+        |    end
+        |  end
+</pre>
+</body>
+</html>

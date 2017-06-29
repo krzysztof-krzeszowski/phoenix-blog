@@ -1,0 +1,56 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<title>cover/Elixir.Pxblog.Endpoint.html</title>
+</head><body style='background-color: white; color: black'>
+<pre>
+File generated from /home/chriss/github/elixir/phoenix-blog/lib/pxblog/endpoint.ex by COVER 2017-06-29 at 13:58:22
+
+****************************************************************************
+
+    54..|  defmodule Pxblog.Endpoint do
+        |    use Phoenix.Endpoint, otp_app: :pxblog
+        |  
+        |    socket "/socket", Pxblog.UserSocket
+        |  
+        |    # Serve at "/" the static files from "priv/static" directory.
+        |    #
+        |    # You should set gzip to true if you are running phoenix.digest
+        |    # when deploying your static files in production.
+        |    plug Plug.Static,
+        |      at: "/", from: :pxblog, gzip: false,
+        |      only: ~w(css fonts images js favicon.ico robots.txt)
+        |  
+        |    # Code reloading can be explicitly enabled under the
+        |    # :code_reloader configuration of your endpoint.
+        |    if code_reloading? do
+        |      socket "/phoenix/live_reload/socket", Phoenix.LiveReloader.Socket
+        |      plug Phoenix.LiveReloader
+        |      plug Phoenix.CodeReloader
+        |    end
+        |  
+        |    plug Plug.RequestId
+        |    plug Plug.Logger
+        |  
+        |    plug Plug.Parsers,
+        |      parsers: [:urlencoded, :multipart, :json],
+        |      pass: ["*/*"],
+        |      json_decoder: Poison
+        |  
+        |    plug Plug.MethodOverride
+        |    plug Plug.Head
+        |  
+        |    # The session will be stored in the cookie and signed,
+        |    # this means its contents can be read but not tampered with.
+        |    # Set :encryption_salt if you would also like to encrypt it.
+        |    plug Plug.Session,
+        |      store: :cookie,
+        |      key: "_pxblog_key",
+        |      signing_salt: "Kj2r7qyq"
+        |  
+        |    plug Pxblog.Router
+        |  end
+</pre>
+</body>
+</html>

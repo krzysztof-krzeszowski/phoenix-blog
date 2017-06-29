@@ -1,0 +1,57 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<title>cover/Elixir.Pxblog.UserSocket.html</title>
+</head><body style='background-color: white; color: black'>
+<pre>
+File generated from /home/chriss/github/elixir/phoenix-blog/web/channels/user_socket.ex by COVER 2017-06-29 at 13:58:22
+
+****************************************************************************
+
+<font color=red>     0..|  defmodule Pxblog.UserSocket do</font>
+        |    use Phoenix.Socket
+        |  
+        |    ## Channels
+        |    # channel "room:*", Pxblog.RoomChannel
+        |    channel "comments:*", Pxblog.CommentChannel
+        |  
+        |    ## Transports
+        |    transport :websocket, Phoenix.Transports.WebSocket, timeout: 45_000
+        |    # transport :longpoll, Phoenix.Transports.LongPoll
+        |  
+        |    # Socket params are passed from the client and can
+        |    # be used to verify and authenticate a user. After
+        |    # verification, you can put default assigns into
+        |    # the socket that will be set for all channels, ie
+        |    #
+        |    #     {:ok, assign(socket, :user_id, verified_user_id)}
+        |    #
+        |    # To deny connection, return `:error`.
+        |    #
+        |    # See `Phoenix.Token` documentation for examples in
+        |    # performing token verification on connect.
+        |    def connect(%{"token" =&gt; token}, socket) do
+<font color=red>     0..|      case Phoenix.Token.verify(socket, "user", token, max_age: 1209600) do</font>
+        |        {:ok, user_id} -&gt;
+        |          {:ok, assign(socket, :user, user_id)}
+        |        {:error, _} -&gt;
+        |          {:ok, socket}
+        |      end
+        |    end
+        |  
+        |    # Socket id's are topics that allow you to identify all sockets for a given user:
+        |    #
+        |    #     def id(socket), do: "users_socket:#{socket.assigns.user_id}"
+        |    #
+        |    # Would allow you to broadcast a "disconnect" event and terminate
+        |    # all active sockets and channels for a given user:
+        |    #
+        |    #     Pxblog.Endpoint.broadcast("users_socket:#{user.id}", "disconnect", %{})
+        |    #
+        |    # Returning `nil` makes this socket anonymous.
+        |    def id(_socket), do: nil
+        |  end
+</pre>
+</body>
+</html>
