@@ -3,6 +3,7 @@ defmodule Pxblog.UserSocket do
 
   ## Channels
   # channel "room:*", Pxblog.RoomChannel
+  channel "comments:*", Pxblog.CommentChannel
 
   ## Transports
   transport :websocket, Phoenix.Transports.WebSocket, timeout: 45_000
@@ -19,8 +20,13 @@ defmodule Pxblog.UserSocket do
   #
   # See `Phoenix.Token` documentation for examples in
   # performing token verification on connect.
-  def connect(_params, socket) do
-    {:ok, socket}
+  def connect(%{"token" => token}, socket) do
+    case Phoenix.Token.verify(socket, "user", token, max_age: 1209600) do
+      {:ok, user_id} ->
+        {:ok, assign(socket, :user, user_id)}
+      {:error, reason} ->
+        {:ok, socket}
+    end
   end
 
   # Socket id's are topics that allow you to identify all sockets for a given user:
